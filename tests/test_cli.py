@@ -107,6 +107,9 @@ class TestOverwriteFlag:
     def test_overwrites_with_flag(self, runner, temp_music_dir, tmp_path):
         dest = tmp_path / "playlists"
         runner.invoke(main, ["generate", "--source", str(temp_music_dir), "--dest", str(dest)])
+        pl_path = dest / "FABRICLIVE_72.m3u"
+        assert pl_path.exists()
+        # Now overwrite
         result = runner.invoke(main, [
             "generate", "--source", str(temp_music_dir), "--dest", str(dest),
             "--overwrite",
@@ -114,6 +117,28 @@ class TestOverwriteFlag:
         assert result.exit_code == 0
         assert "Skipped" not in result.output
         assert "Skipping" not in result.output
+        # File still exists and was re-written (same content here, but write happened)
+        assert pl_path.exists()
+
+    def test_overwrites_dir_with_spaces(self, runner, temp_music_dir, tmp_path):
+        """Verifies overwrite works when directory names contain spaces."""
+        dest = tmp_path / "playlists"
+        runner.invoke(main, ["generate", "--source", str(temp_music_dir), "--dest", str(dest)])
+        pl_path = dest / "FABRICLIVE 95 - Test.m3u"
+        assert pl_path.exists()
+        # Second run without --overwrite skips
+        result = runner.invoke(main, [
+            "generate", "--source", str(temp_music_dir), "--dest", str(dest),
+        ])
+        assert "Skipping" in result.output or "Skipped" in result.output
+        # With --overwrite, it writes
+        result = runner.invoke(main, [
+            "generate", "--source", str(temp_music_dir), "--dest", str(dest),
+            "--overwrite",
+        ])
+        assert result.exit_code == 0
+        assert "Skipping" not in result.output
+        assert pl_path.exists()
 
 
 class TestContinuousFile:
