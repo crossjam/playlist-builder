@@ -1,5 +1,6 @@
 """Tests for directory scanner."""
-from fabric_playlists.scanner import is_audio_file, scan_directory, scan_all_directories
+from fabric_playlists.scanner import is_audio_file, scan_all_directories, scan_directory
+
 
 class TestIsAudioFile:
     def test_mp3_is_audio(self, temp_music_dir):

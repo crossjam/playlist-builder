@@ -168,7 +168,9 @@ class TestEndToEnd:
         dest = tmp_path / "playlists"
 
         # 1. Generate
-        result = runner.invoke(main, ["generate", "--source", str(temp_music_dir), "--dest", str(dest)])
+        result = runner.invoke(main, [
+            "generate", "--source", str(temp_music_dir), "--dest", str(dest),
+        ])
         assert result.exit_code == 0
         assert (dest / "FABRICLIVE_72.m3u").exists()
 

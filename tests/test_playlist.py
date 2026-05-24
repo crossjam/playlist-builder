@@ -1,7 +1,7 @@
 """Tests for playlist I/O operations."""
 
 from fabric_playlists.models import Playlist, Track
-from fabric_playlists.playlist import write_playlist, read_playlist, list_playlists, delete_playlist
+from fabric_playlists.playlist import delete_playlist, list_playlists, read_playlist, write_playlist
 
 
 class TestWritePlaylist:

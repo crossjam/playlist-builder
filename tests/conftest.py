@@ -1,9 +1,10 @@
 """Shared test fixtures."""
 
-import os
 import tempfile
 from pathlib import Path
+
 import pytest
+
 
 @pytest.fixture
 def temp_music_dir():

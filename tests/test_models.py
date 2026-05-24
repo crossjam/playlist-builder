@@ -1,6 +1,6 @@
 """Tests for playlist data models."""
 
-from fabric_playlists.models import Track, Playlist, parse_m3u
+from fabric_playlists.models import Playlist, Track, parse_m3u
 
 
 class TestTrack:

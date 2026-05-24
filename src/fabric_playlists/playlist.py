@@ -1,7 +1,6 @@
 """M3U playlist read/write/validate operations."""
 
 from pathlib import Path
-from typing import List, Optional
 
 from fabric_playlists.config import _safe_filename
 from fabric_playlists.models import Playlist, parse_m3u
@@ -16,7 +15,7 @@ def write_playlist(playlist: Playlist, dest_dir: Path) -> Path:
     return filepath
 
 
-def read_playlist(filepath: Path) -> Optional[Playlist]:
+def read_playlist(filepath: Path) -> Playlist | None:
     """Read an .m3u file and return a Playlist, or None if not found."""
     if not filepath.exists():
         return None
@@ -25,7 +24,7 @@ def read_playlist(filepath: Path) -> Optional[Playlist]:
     return parse_m3u(name, content)
 
 
-def list_playlists(dest_dir: Path) -> List[Playlist]:
+def list_playlists(dest_dir: Path) -> list[Playlist]:
     """List all .m3u playlists in the destination directory."""
     if not dest_dir.is_dir():
         return []

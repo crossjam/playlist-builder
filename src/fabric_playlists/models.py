@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List
 
 
 @dataclass
@@ -22,7 +21,7 @@ class Track:
 class Playlist:
     """An M3U playlist containing audio tracks."""
     name: str
-    tracks: List[Track] = field(default_factory=list)
+    tracks: list[Track] = field(default_factory=list)
 
     @property
     def track_count(self) -> int:
