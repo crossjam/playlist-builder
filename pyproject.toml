@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fabric-playlists"
+version = "0.1.0"
+description = "CLI tool to generate and manage M3U playlists for Fabric music directories"
+requires-python = ">=3.11"
+dependencies = [
+    "click>=8.1",
+    "loguru>=0.7",
+    "platformdirs>=4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "poethepoet>=0.26",
+    "ruff>=0.4",
+    "ty>=0.0.1",
+    "pytest>=8.0",
+]
+
+[project.scripts]
+fabric-playlists = "fabric_playlists.cli:main"
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.poe.tasks]
+lint = "ruff check src/ tests/"
+lint-fix = "ruff check --fix src/ tests/"
+typecheck = "ty src/"
+test = "pytest tests/ -v"
+qa = [
+    { cmd = "ruff check src/ tests/" },
+    { cmd = "ty src/" },
+    { cmd = "pytest tests/ -v" },
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "C4"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["fabric_playlists"]
+
+[tool.ty]
+python-version = "3.11"
+strict = true
