@@ -40,8 +40,8 @@ def scan_directory(dir_path: Path) -> list[Track]:
 
 
 def _filter_continuous(tracks: list[Track]) -> list[Track]:
-    """If any track has stem 'continuous', return only that track."""
-    continuous = [t for t in tracks if Path(t.relative_path).stem.lower() == "continuous"]
+    """If any track's stem contains 'continuous', return only those tracks."""
+    continuous = [t for t in tracks if "continuous" in Path(t.relative_path).stem.lower()]
     if continuous:
         return continuous
     return tracks

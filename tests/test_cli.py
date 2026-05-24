@@ -150,7 +150,8 @@ class TestContinuousFile:
         result = runner.invoke(main, ["info", "FABRICLIVE_CONT", "--dest", str(dest)])
         assert result.exit_code == 0
         assert "continuous.mp3" in result.output
-        assert "Tracks: 1" in result.output
+        assert "01 - Continuous Mix.flac" in result.output
+        assert "Tracks: 2" in result.output
         assert "01 - Intro.flac" not in result.output
 
 

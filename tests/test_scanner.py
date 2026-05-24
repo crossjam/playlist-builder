@@ -36,10 +36,12 @@ class TestScanDirectory:
         assert len(tracks) == 0
 
     def test_continuous_trumps_all(self, temp_music_dir):
-        """If a directory has a 'continuous' file, only that file is included."""
+        """If a directory has files with 'continuous' in the stem, only those appear."""
         tracks = scan_directory(temp_music_dir / "FABRICLIVE_CONT")
         paths = [t.relative_path for t in tracks]
-        assert paths == ["continuous.mp3"]
+        assert "continuous.mp3" in paths
+        assert "01 - Continuous Mix.flac" in paths
+        assert len(paths) == 2
         assert "01 - Intro.flac" not in paths
         assert "03 - Outro.wav" not in paths
 

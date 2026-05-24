@@ -49,6 +49,7 @@ def temp_music_dir():
         continuous.mkdir()
         (continuous / "01 - Intro.flac").touch()
         (continuous / "continuous.mp3").touch()
+        (continuous / "01 - Continuous Mix.flac").touch()
         (continuous / "03 - Outro.wav").touch()
         # Dir with spaces in name
         space_dir = base / "FABRICLIVE 95 - Test"
