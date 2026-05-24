@@ -35,7 +35,16 @@ def scan_directory(dir_path: Path) -> list[Track]:
                     tracks.append(Track(relative_path=str(rel)))
     except PermissionError:
         pass
-    return _dedupe_prefer_m4a(sorted(tracks))
+    tracks = _dedupe_prefer_m4a(sorted(tracks))
+    return _filter_continuous(tracks)
+
+
+def _filter_continuous(tracks: list[Track]) -> list[Track]:
+    """If any track has stem 'continuous', return only that track."""
+    continuous = [t for t in tracks if Path(t.relative_path).stem.lower() == "continuous"]
+    if continuous:
+        return continuous
+    return tracks
 
 
 def _dedupe_prefer_m4a(tracks):

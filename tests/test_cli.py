@@ -90,6 +90,45 @@ class TestGenerateCommand:
         assert result.exit_code != 0
 
 
+class TestOverwriteFlag:
+    """Tests for the --overwrite flag on generate."""
+
+    def test_skips_existing_without_overwrite(self, runner, temp_music_dir, tmp_path):
+        dest = tmp_path / "playlists"
+        # First run
+        runner.invoke(main, ["generate", "--source", str(temp_music_dir), "--dest", str(dest)])
+        # Second run without --overwrite should skip
+        result = runner.invoke(main, [
+            "generate", "--source", str(temp_music_dir), "--dest", str(dest),
+        ])
+        assert result.exit_code == 0
+        assert "Skipping" in result.output or "Skipped" in result.output
+
+    def test_overwrites_with_flag(self, runner, temp_music_dir, tmp_path):
+        dest = tmp_path / "playlists"
+        runner.invoke(main, ["generate", "--source", str(temp_music_dir), "--dest", str(dest)])
+        result = runner.invoke(main, [
+            "generate", "--source", str(temp_music_dir), "--dest", str(dest),
+            "--overwrite",
+        ])
+        assert result.exit_code == 0
+        assert "Skipped" not in result.output
+        assert "Skipping" not in result.output
+
+
+class TestContinuousFile:
+    """Continuous mix file overrides all other files."""
+
+    def test_continuous_file_in_playlist(self, runner, temp_music_dir, tmp_path):
+        dest = tmp_path / "playlists"
+        runner.invoke(main, ["generate", "--source", str(temp_music_dir), "--dest", str(dest)])
+        result = runner.invoke(main, ["info", "FABRICLIVE_CONT", "--dest", str(dest)])
+        assert result.exit_code == 0
+        assert "continuous.mp3" in result.output
+        assert "Tracks: 1" in result.output
+        assert "01 - Intro.flac" not in result.output
+
+
 class TestVerboseFlag:
     """Verbose flag tests."""
 

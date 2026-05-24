@@ -44,4 +44,10 @@ def temp_music_dir():
         archives.mkdir()
         (archives / "01 - Old.mp3").touch()
         (archives / "02 - Archive.flac").touch()
+        # Dir with a continuous mix file
+        continuous = base / "FABRICLIVE_CONT"
+        continuous.mkdir()
+        (continuous / "01 - Intro.flac").touch()
+        (continuous / "continuous.mp3").touch()
+        (continuous / "03 - Outro.wav").touch()
         yield base

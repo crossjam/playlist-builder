@@ -35,12 +35,21 @@ class TestScanDirectory:
         tracks = scan_directory(temp_music_dir / "wav archives 2019")
         assert len(tracks) == 0
 
+    def test_continuous_trumps_all(self, temp_music_dir):
+        """If a directory has a 'continuous' file, only that file is included."""
+        tracks = scan_directory(temp_music_dir / "FABRICLIVE_CONT")
+        paths = [t.relative_path for t in tracks]
+        assert paths == ["continuous.mp3"]
+        assert "01 - Intro.flac" not in paths
+        assert "03 - Outro.wav" not in paths
+
 class TestScanAllDirectories:
     def test_scans_all_non_presents_dirs(self, temp_music_dir):
         results = scan_all_directories(temp_music_dir)
         names = [r[0] for r in results]
         assert "FABRICLIVE_72" in names
         assert "fabric_100" in names
+        assert "FABRICLIVE_CONT" in names
         assert "fabric presents Something" not in names
         assert "wav archives 2019" not in names
     def test_returns_empty_for_nonexistent(self, tmp_path):

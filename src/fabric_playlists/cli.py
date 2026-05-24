@@ -69,8 +69,12 @@ def main(ctx: click.Context, verbose: bool, config_path: str | None) -> None:
     "--convert-to-m4a", is_flag=True, default=False,
     help="Transcode non-M4A tracks to M4A (requires ffmpeg).",
 )
+@click.option(
+    "--overwrite", is_flag=True, default=False,
+    help="Overwrite existing M3U files instead of skipping them.",
+)
 @click.pass_obj
-def generate(cfg, source, dest, convert_to_m4a):
+def generate(cfg, source, dest, convert_to_m4a, overwrite):
     """Scan Fabric directories and generate M3U playlists."""
     source = Path(source or cfg.source)
     dest = Path(dest or cfg.dest)
@@ -88,7 +92,10 @@ def generate(cfg, source, dest, convert_to_m4a):
         logger.warning("No directories with audio files found.")
         return
 
+    from fabric_playlists.config import _safe_filename as safe_fn
+
     count = 0
+    skipped = 0
     for name, tracks in results:
         playlist = Playlist(name=name, tracks=tracks)
 
@@ -101,11 +108,19 @@ def generate(cfg, source, dest, convert_to_m4a):
             except RuntimeError as e:
                 raise click.ClickException(str(e)) from e
 
+        out_path = dest / f"{safe_fn(name)}.m3u"
+        if out_path.exists() and not overwrite:
+            logger.warning(f"  Skipping {out_path} (already exists, use --overwrite to replace)")
+            skipped += 1
+            continue
+
         filepath = write_playlist(playlist, dest)
         suffix = " (converted to M4A)" if convert_to_m4a else ""
         logger.success(f"  {filepath} — {len(playlist.tracks)} tracks{suffix}")
         count += 1
 
+    if skipped:
+        logger.info(f"Skipped {skipped} existing playlist(s)")
     logger.info(f"Generated {count} playlist(s) in {dest}")
 
 
