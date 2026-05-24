@@ -11,6 +11,7 @@ def is_audio_file(path: Path) -> bool:
     return path.is_file() and path.suffix.lower() in SUPPORTED_EXTENSIONS
 
 SKIP_PATTERNS = ["presents", "archives"]
+INCLUDE_PATTERNS = ["FABRICLIVE", "fabric presents"]
 
 
 def _should_skip(name: str) -> bool:
@@ -19,10 +20,14 @@ def _should_skip(name: str) -> bool:
     return any(p in lower for p in SKIP_PATTERNS)
 
 
+def _should_include(name: str) -> bool:
+    """Return True if the directory name matches an include pattern."""
+    lower = name.lower()
+    return any(p.lower() in lower for p in INCLUDE_PATTERNS)
+
+
 def scan_directory(dir_path: Path) -> list[Track]:
     if not dir_path.is_dir():
-        return []
-    if _should_skip(dir_path.name):
         return []
     tracks = []
     try:
@@ -67,8 +72,9 @@ def scan_all_directories(base_dir: Path) -> list[tuple[str, list[Track]]]:
     for item in sorted(base_dir.iterdir()):
         if not item.is_dir():
             continue
-        if _should_skip(item.name):
+        if not _should_include(item.name):
             continue
+        # No _should_skip here — include overrides skip at the top level
         tracks = scan_directory(item)
         if tracks:
             results.append((item.name, tracks))

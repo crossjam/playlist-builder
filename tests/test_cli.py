@@ -75,9 +75,10 @@ class TestGenerateCommand:
         m3u_files = sorted(dest.glob("*.m3u"))
         m3u_names = {f.stem for f in m3u_files}
         assert "FABRICLIVE_72" in m3u_names, f"Got: {m3u_names}"
-        assert "fabric_100" in m3u_names, f"Got: {m3u_names}"
-        # Presents dir should not produce a playlist
-        assert not any("presents" in name.lower() for name in m3u_names)
+        # fabric_100 doesn't match INCLUDE_PATTERNS, excluded
+        assert "fabric_100" not in m3u_names
+        # fabric presents is included (include overrides skip)
+        assert "fabric presents Something" in m3u_names
         # EmptyAlbum should not produce a playlist
         assert "EmptyAlbum" not in m3u_names
 
