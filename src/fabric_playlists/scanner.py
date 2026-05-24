@@ -10,15 +10,24 @@ SUPPORTED_EXTENSIONS = {".mp3", ".flac", ".wav", ".m4a", ".ogg"}
 def is_audio_file(path: Path) -> bool:
     return path.is_file() and path.suffix.lower() in SUPPORTED_EXTENSIONS
 
+SKIP_PATTERNS = ["presents", "archives"]
+
+
+def _should_skip(name: str) -> bool:
+    """Return True if the directory name should be skipped."""
+    lower = name.lower()
+    return any(p in lower for p in SKIP_PATTERNS)
+
+
 def scan_directory(dir_path: Path) -> list[Track]:
     if not dir_path.is_dir():
         return []
-    if "presents" in dir_path.name.lower():
+    if _should_skip(dir_path.name):
         return []
     tracks = []
     try:
         for root, dirs, files in os.walk(dir_path):
-            dirs[:] = [d for d in dirs if "presents" not in d.lower()]
+            dirs[:] = [d for d in dirs if not _should_skip(d)]
             for filename in files:
                 filepath = Path(root) / filename
                 if is_audio_file(filepath):
@@ -49,7 +58,7 @@ def scan_all_directories(base_dir: Path) -> list[tuple[str, list[Track]]]:
     for item in sorted(base_dir.iterdir()):
         if not item.is_dir():
             continue
-        if "presents" in item.name.lower():
+        if _should_skip(item.name):
             continue
         tracks = scan_directory(item)
         if tracks:

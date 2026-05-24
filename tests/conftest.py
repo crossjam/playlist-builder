@@ -39,4 +39,9 @@ def temp_music_dir():
         (dup / "01 - Intro.m4a").touch()
         (dup / "02 - Mix.flac").touch()
         (dup / "02 - Mix.wav").touch()
+        # Archives dir — should be skipped (contains "archives" in name)
+        archives = base / "wav archives 2019"
+        archives.mkdir()
+        (archives / "01 - Old.mp3").touch()
+        (archives / "02 - Archive.flac").touch()
         yield base

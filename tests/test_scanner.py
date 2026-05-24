@@ -30,6 +30,11 @@ class TestScanDirectory:
         tracks = scan_directory(temp_music_dir / "EmptyAlbum")
         assert len(tracks) == 0
 
+    def test_skips_archives_dir(self, temp_music_dir):
+        """Directories with 'archives' in the name should be skipped."""
+        tracks = scan_directory(temp_music_dir / "wav archives 2019")
+        assert len(tracks) == 0
+
 class TestScanAllDirectories:
     def test_scans_all_non_presents_dirs(self, temp_music_dir):
         results = scan_all_directories(temp_music_dir)
@@ -37,6 +42,7 @@ class TestScanAllDirectories:
         assert "FABRICLIVE_72" in names
         assert "fabric_100" in names
         assert "fabric presents Something" not in names
+        assert "wav archives 2019" not in names
     def test_returns_empty_for_nonexistent(self, tmp_path):
         results = scan_all_directories(tmp_path / "nonexistent")
         assert results == []
