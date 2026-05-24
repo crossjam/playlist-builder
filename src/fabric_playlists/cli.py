@@ -1,8 +1,8 @@
 """Click CLI entry point for fabric-playlists."""
 
-import click
+from importlib.metadata import version as _get_version
 
-from importlib.metadata import version
+import click
 
 
 @click.group()
@@ -18,12 +18,12 @@ def generate() -> None:
 
 
 @main.command()
-def list() -> None:  # noqa: A001
+def list() -> None:
     """List available playlists."""
     click.echo("Not implemented")
 
 
 @main.command()
-def version_cmd() -> None:
-    """Show the current version."""
-    click.echo(version("fabric-playlists"))
+def version() -> None:
+    """Show the installed version."""
+    click.echo(_get_version("fabric-playlists"))
