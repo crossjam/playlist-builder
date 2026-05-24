@@ -6,6 +6,7 @@ from pathlib import Path
 
 import click
 from loguru import logger
+from rich.prompt import Prompt
 
 from fabric_playlists.config import _safe_filename, get_config_path, init_config, load_config
 from fabric_playlists.models import Playlist
@@ -56,6 +57,31 @@ def main(ctx: click.Context, verbose: bool, config_path: str | None) -> None:
     logger.debug(f"Config loaded: source={cfg.source}, dest={cfg.dest}")
 
 
+def _prompt_continuous_selection(tracks):
+    """If multiple tracks have 'continuous' in their stem, prompt user to pick one."""
+    continuous = [t for t in tracks if "continuous" in Path(t.relative_path).stem.lower()]
+    if len(continuous) <= 1:
+        return tracks
+    if not sys.stdin.isatty():
+        # Non-interactive: auto-select the first continuous file
+        logger.info(f"Non-interactive mode: auto-selecting {continuous[0].relative_path}")
+        return [continuous[0]]
+    non_continuous = [t for t in tracks if t not in continuous]
+    click.echo("\nMultiple continuous files found in directory:")
+    choices = []
+    for i, t in enumerate(continuous, 1):
+        click.echo(f"  {i}. {t.relative_path}")
+        choices.append(str(i))
+    none_choice = str(len(continuous) + 1)
+    click.echo(f"  {none_choice}. Keep all regular tracks (ignore continuous)")
+    choices.append(none_choice)
+    choice = Prompt.ask("Select", choices=choices, default="1")
+    idx = int(choice) - 1
+    if idx == len(continuous):
+        return non_continuous
+    return [continuous[idx]]
+
+
 @main.command()
 @click.option(
     "--source", "-s", default=None,
@@ -99,6 +125,9 @@ def generate(cfg, source, dest, convert_to_m4a, overwrite):
     for name, tracks in results:
         playlist = Playlist(name=name, tracks=tracks)
 
+        # Handle continuous file selection
+        playlist = Playlist(name=name, tracks=_prompt_continuous_selection(playlist.tracks))
+
         if convert_to_m4a:
             from fabric_playlists.converter import convert_playlist_tracks
 
@@ -109,10 +138,25 @@ def generate(cfg, source, dest, convert_to_m4a, overwrite):
                 raise click.ClickException(str(e)) from e
 
         out_path = dest / f"{safe_fn(name)}.m3u"
-        if out_path.exists() and not overwrite:
-            logger.warning(f"  Skipping {out_path} (already exists, use --overwrite to replace)")
-            skipped += 1
-            continue
+        if out_path.exists():
+            if not overwrite:
+                logger.warning(
+                    f"  Skipping {out_path}"
+                    f" (already exists, use --overwrite to replace)"
+                )
+                skipped += 1
+                continue
+            # Smart overwrite: only write if content actually changed
+            new_content = playlist.to_m3u()
+            try:
+                old_content = out_path.read_text()
+            except OSError:
+                old_content = ""
+            if new_content == old_content:
+                logger.info(f"  {out_path} unchanged, skipping")
+                skipped += 1
+                continue
+            logger.info(f"  Overwriting {out_path} (content changed)")
 
         filepath = write_playlist(playlist, dest)
         suffix = " (converted to M4A)" if convert_to_m4a else ""

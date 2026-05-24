@@ -109,15 +109,13 @@ class TestOverwriteFlag:
         runner.invoke(main, ["generate", "--source", str(temp_music_dir), "--dest", str(dest)])
         pl_path = dest / "FABRICLIVE_72.m3u"
         assert pl_path.exists()
-        # Now overwrite
+        # Content hasn't changed → smart overwrite skips with "unchanged"
         result = runner.invoke(main, [
             "generate", "--source", str(temp_music_dir), "--dest", str(dest),
             "--overwrite",
         ])
         assert result.exit_code == 0
-        assert "Skipped" not in result.output
-        assert "Skipping" not in result.output
-        # File still exists and was re-written (same content here, but write happened)
+        assert "unchanged" in result.output
         assert pl_path.exists()
 
     def test_overwrites_dir_with_spaces(self, runner, temp_music_dir, tmp_path):
@@ -131,14 +129,19 @@ class TestOverwriteFlag:
             "generate", "--source", str(temp_music_dir), "--dest", str(dest),
         ])
         assert "Skipping" in result.output or "Skipped" in result.output
-        # With --overwrite, it writes
+        # Modify the file so content differs
+        pl_path.write_text("#EXTM3U\nmodified_track.mp3\n")
+        # With --overwrite, content differs → actually overwrites
         result = runner.invoke(main, [
             "generate", "--source", str(temp_music_dir), "--dest", str(dest),
             "--overwrite",
         ])
         assert result.exit_code == 0
-        assert "Skipping" not in result.output
+        assert "Overwriting" in result.output
         assert pl_path.exists()
+        # Verify content was replaced
+        restored = pl_path.read_text()
+        assert "01.flac" in restored
 
 
 class TestContinuousFile:
@@ -149,9 +152,8 @@ class TestContinuousFile:
         runner.invoke(main, ["generate", "--source", str(temp_music_dir), "--dest", str(dest)])
         result = runner.invoke(main, ["info", "FABRICLIVE_CONT", "--dest", str(dest)])
         assert result.exit_code == 0
-        assert "continuous.mp3" in result.output
         assert "01 - Continuous Mix.flac" in result.output
-        assert "Tracks: 2" in result.output
+        assert "Tracks: 1" in result.output
         assert "01 - Intro.flac" not in result.output
 
 
