@@ -1,5 +1,6 @@
 """Directory scanner for audio files."""
 import os
+from collections import defaultdict
 from pathlib import Path
 from typing import List, Tuple
 from fabric_playlists.models import Track
@@ -25,7 +26,21 @@ def scan_directory(dir_path: Path) -> List[Track]:
                     tracks.append(Track(relative_path=str(rel)))
     except PermissionError:
         pass
-    return sorted(tracks)
+    return _dedupe_prefer_m4a(sorted(tracks))
+
+
+def _dedupe_prefer_m4a(tracks):
+    """If multiple tracks share the same stem, keep only .m4a version."""
+    by_stem = defaultdict(list)
+    for t in tracks:
+        stem = Path(t.relative_path).stem
+        by_stem[stem].append(t)
+    kept = []
+    for candidates in by_stem.values():
+        m4a = [t for t in candidates if t.extension == ".m4a"]
+        kept.extend(m4a if m4a else candidates)
+    return sorted(kept)
+
 
 def scan_all_directories(base_dir: Path) -> List[Tuple[str, List[Track]]]:
     results = []

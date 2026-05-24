@@ -31,4 +31,11 @@ def temp_music_dir():
         (nested / "cd1" / "01.flac").touch()
         (nested / "cd2" / "01.mp3").parent.mkdir(parents=True, exist_ok=True)
         (nested / "cd2" / "01.mp3").touch()
+        # Dir with duplicate stems (same track, different formats)
+        dup = base / "FABRICLIVE_99"
+        dup.mkdir()
+        (dup / "01 - Intro.mp3").touch()
+        (dup / "01 - Intro.m4a").touch()
+        (dup / "02 - Mix.flac").touch()
+        (dup / "02 - Mix.wav").touch()
         yield base

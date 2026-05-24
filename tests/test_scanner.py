@@ -39,3 +39,20 @@ class TestScanAllDirectories:
     def test_returns_empty_for_nonexistent(self, tmp_path):
         results = scan_all_directories(tmp_path / "nonexistent")
         assert results == []
+
+class TestDedupePreferM4a:
+    def test_keeps_m4a_over_mp3_same_stem(self, temp_music_dir):
+        tracks = scan_directory(temp_music_dir / "FABRICLIVE_99")
+        paths = [t.relative_path for t in tracks]
+        assert "01 - Intro.m4a" in paths
+        assert "01 - Intro.mp3" not in paths
+
+    def test_keeps_both_when_no_m4a_duplicate(self, temp_music_dir):
+        tracks = scan_directory(temp_music_dir / "FABRICLIVE_99")
+        paths = [t.relative_path for t in tracks]
+        assert "02 - Mix.flac" in paths
+        assert "02 - Mix.wav" in paths
+
+    def test_dedup_does_not_affect_unique_tracks(self, temp_music_dir):
+        tracks = scan_directory(temp_music_dir / "FABRICLIVE_72")
+        assert len(tracks) == 2
