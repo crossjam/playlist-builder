@@ -33,11 +33,11 @@ where = ["src"]
 [tool.poe.tasks]
 lint = "ruff check src/ tests/"
 lint-fix = "ruff check --fix src/ tests/"
-typecheck = "ty src/"
+typecheck = "ty check --python-version 3.11 src/"
 test = "pytest tests/ -v"
 qa = [
     { cmd = "ruff check src/ tests/" },
-    { cmd = "ty src/" },
+    { cmd = "ty check --python-version 3.11 src/" },
     { cmd = "pytest tests/ -v" },
 ]
 
@@ -51,7 +51,3 @@ ignore = []
 
 [tool.ruff.lint.isort]
 known-first-party = ["fabric_playlists"]
-
-[tool.ty]
-python-version = "3.11"
-strict = true
