@@ -159,3 +159,38 @@ class TestDeleteCommand:
             ["delete", "nonexistent", "--dest", str(tmp_path / "playlists"), "--yes"],
         )
         assert result.exit_code != 0
+
+
+class TestEndToEnd:
+    """Full workflow: generate -> list -> info -> validate -> delete."""
+
+    def test_full_workflow(self, runner, temp_music_dir, tmp_path):
+        dest = tmp_path / "playlists"
+
+        # 1. Generate
+        result = runner.invoke(main, ["generate", "--source", str(temp_music_dir), "--dest", str(dest)])
+        assert result.exit_code == 0
+        assert (dest / "FABRICLIVE_72.m3u").exists()
+
+        # 2. List
+        result = runner.invoke(main, ["list", "--dest", str(dest)])
+        assert result.exit_code == 0
+        assert "FABRICLIVE_72" in result.output
+
+        # 3. Info
+        result = runner.invoke(main, ["info", "FABRICLIVE_72", "--dest", str(dest)])
+        assert result.exit_code == 0
+        assert "01 - Intro.mp3" in result.output
+
+        # 4. Validate
+        result = runner.invoke(
+            main,
+            ["validate", "FABRICLIVE_72", "--dest", str(dest), "--source", str(temp_music_dir)],
+        )
+        assert result.exit_code == 0
+        assert "PASSED" in result.output
+
+        # 5. Delete
+        result = runner.invoke(main, ["delete", "FABRICLIVE_72", "--dest", str(dest), "--yes"])
+        assert result.exit_code == 0
+        assert not (dest / "FABRICLIVE_72.m3u").exists()
