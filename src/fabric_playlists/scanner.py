@@ -16,7 +16,7 @@ def is_audio_file(path: Path) -> bool:
 
 SKIP_PATTERNS = ["presents", "archives"]
 INCLUDE_PATTERNS = ["FABRICLIVE", "fabric presents"]
-INCLUDE_REGEX = re.compile(r"fabric\s\d", re.IGNORECASE)
+INCLUDE_REGEX = re.compile(r"fabric\s\d{1,3}", re.IGNORECASE)
 
 
 def _should_skip(name: str) -> bool:
