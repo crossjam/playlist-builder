@@ -4,7 +4,6 @@ import os
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 import platformdirs
 
@@ -44,7 +43,7 @@ class AppConfig:
     log_level: str = "INFO"
 
     @classmethod
-    def from_toml(cls, path: Optional[Path] = None) -> "AppConfig":
+    def from_toml(cls, path: Path | None = None) -> "AppConfig":
         """Load config from TOML file, falling back to defaults if missing."""
         path = path or get_config_path()
         if not path.exists():
@@ -68,12 +67,12 @@ class AppConfig:
         )
 
 
-def load_config(config_path: Optional[Path] = None) -> AppConfig:
+def load_config(config_path: Path | None = None) -> AppConfig:
     """Load and merge configuration: TOML file → env vars."""
     return AppConfig.from_toml(config_path).with_env_overrides()
 
 
-def init_config(config_path: Optional[Path] = None):
+def init_config(config_path: Path | None = None) -> AppConfig:
     """Create a default config file if one doesn't exist. Returns loaded config."""
     config_dir = get_config_dir()
     config_dir.mkdir(parents=True, exist_ok=True)

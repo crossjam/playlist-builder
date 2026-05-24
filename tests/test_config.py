@@ -1,14 +1,11 @@
 """Tests for configuration module."""
 
-from pathlib import Path
-
-import pytest
 from fabric_playlists.config import (
     AppConfig,
     get_config_dir,
     get_config_path,
-    load_config,
     init_config,
+    load_config,
 )
 
 
@@ -80,7 +77,7 @@ class TestLoadConfig:
 class TestInitConfig:
     def test_creates_config_file_if_missing(self, tmp_path):
         target = tmp_path / "config.toml"
-        cfg = init_config(target)
+        _ = init_config(target)
         assert target.exists()
         content = target.read_text()
         assert "source" in content
