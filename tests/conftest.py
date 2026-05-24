@@ -56,4 +56,9 @@ def temp_music_dir():
         space_dir.mkdir()
         (space_dir / "01.flac").touch()
         (space_dir / "02.mp3").touch()
+        # Dir matching regex: fabric + space + digit
+        fabric72 = base / "fabric 72"
+        fabric72.mkdir()
+        (fabric72 / "01.flac").touch()
+        (fabric72 / "02.wav").touch()
         yield base

@@ -1,5 +1,7 @@
 """Directory scanner for audio files."""
+
 import os
+import re
 from collections import defaultdict
 from pathlib import Path
 
@@ -7,11 +9,14 @@ from fabric_playlists.models import Track
 
 SUPPORTED_EXTENSIONS = {".mp3", ".flac", ".wav", ".m4a", ".ogg"}
 
+
 def is_audio_file(path: Path) -> bool:
     return path.is_file() and path.suffix.lower() in SUPPORTED_EXTENSIONS
 
+
 SKIP_PATTERNS = ["presents", "archives"]
 INCLUDE_PATTERNS = ["FABRICLIVE", "fabric presents"]
+INCLUDE_REGEX = re.compile(r"fabric\s\d", re.IGNORECASE)
 
 
 def _should_skip(name: str) -> bool:
@@ -23,7 +28,9 @@ def _should_skip(name: str) -> bool:
 def _should_include(name: str) -> bool:
     """Return True if the directory name matches an include pattern."""
     lower = name.lower()
-    return any(p.lower() in lower for p in INCLUDE_PATTERNS)
+    if any(p.lower() in lower for p in INCLUDE_PATTERNS):
+        return True
+    return bool(INCLUDE_REGEX.search(name))
 
 
 def scan_directory(dir_path: Path) -> list[Track]:

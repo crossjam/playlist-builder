@@ -35,6 +35,13 @@ class TestFilters:
         assert not _should_include("fabric_100")
         assert not _should_include("EmptyAlbum")
 
+    def test_include_fabric_digit(self):
+        """Regex matches 'fabric' + whitespace + digit."""
+        assert _should_include("fabric 72")
+        assert _should_include("fabric 100")
+        assert _should_include("fabric 1")
+        assert not _should_include("fabric_100")  # underscore, not space
+
     def test_skip_presents_in_name(self):
         assert _should_skip("fabric presents Something")
         assert _should_skip("presents_album")
@@ -86,6 +93,7 @@ class TestScanAllDirectories:
         assert "FABRICLIVE_72" in names
         assert "FABRICLIVE_CONT" in names
         assert "FABRICLIVE 95 - Test" in names
+        assert "fabric 72" in names
         assert "fabric presents Something" in names  # include overrides skip
         # Not matching INCLUDE_PATTERNS
         assert "fabric_100" not in names
