@@ -7,7 +7,7 @@ from pathlib import Path
 import click
 from loguru import logger
 
-from fabric_playlists.config import get_config_path, init_config, load_config
+from fabric_playlists.config import _safe_filename, get_config_path, init_config, load_config
 from fabric_playlists.models import Playlist
 from fabric_playlists.playlist import write_playlist
 from fabric_playlists.scanner import scan_all_directories
@@ -150,6 +150,83 @@ def init(force):
 def version():
     """Show the installed version."""
     click.echo(_get_version("fabric-playlists"))
+
+
+@main.command()
+@click.argument("name")
+@click.option("--dest", "-d", default=None)
+@click.pass_obj
+def info(cfg, name, dest):
+    """Show details about a specific playlist."""
+    from fabric_playlists.playlist import read_playlist
+    dest = Path(dest or cfg.dest)
+    safe_name = _safe_filename(name)
+    filepath = dest / f"{safe_name}.m3u"
+    playlist = read_playlist(filepath)
+    if playlist is None:
+        raise click.ClickException(f"Playlist '{name}' not found in {dest}")
+    click.echo(f"Name:   {playlist.name}")
+    click.echo(f"Tracks: {playlist.track_count}")
+    click.echo(f"File:   {filepath}")
+    click.echo("\nTracks:")
+    for i, track in enumerate(playlist.tracks, 1):
+        click.echo(f"  {i:3d}. {track.relative_path}")
+
+
+@main.command()
+@click.argument("name")
+@click.option("--dest", "-d", default=None)
+@click.option("--source", "-s", default=None, help="Base source directory (for validating paths).")
+@click.pass_obj
+def validate(cfg, name, dest, source):
+    """Check that playlist entries point to real files."""
+    from fabric_playlists.playlist import read_playlist
+    dest = Path(dest or cfg.dest)
+    source_dir = Path(source) if source else Path(cfg.source) if cfg.source else None
+    safe_name = _safe_filename(name)
+    filepath = dest / f"{safe_name}.m3u"
+    playlist = read_playlist(filepath)
+    if playlist is None:
+        raise click.ClickException(f"Playlist '{name}' not found in {dest}")
+    if not source_dir or not source_dir.is_dir():
+        raise click.ClickException("Validation requires --source (base music directory).")
+    missing = []
+    found = 0
+    for track in playlist.tracks:
+        full_path = source_dir / name / track.relative_path
+        if full_path.exists():
+            found += 1
+        else:
+            missing.append(track.relative_path)
+    if missing:
+        click.echo(click.style(
+            f"VALIDATION FAILED: {len(missing)}/{len(playlist.tracks)} paths missing",
+            fg="red",
+        ))
+        for path in missing:
+            click.echo(f"  MISSING: {path}")
+        raise click.ClickException("Validation failed.")
+    else:
+        click.echo(click.style(
+            f"VALIDATION PASSED: {found}/{len(playlist.tracks)} paths exist",
+            fg="green",
+        ))
+
+
+@main.command()
+@click.argument("name")
+@click.option("--dest", "-d", default=None)
+@click.confirmation_option(prompt="Are you sure you want to delete this playlist?")
+@click.pass_obj
+def delete(cfg, name, dest):
+    """Remove a playlist file."""
+    from fabric_playlists.playlist import delete_playlist as rm_playlist
+    dest = Path(dest or cfg.dest)
+    success = rm_playlist(name, dest)
+    if success:
+        click.echo(f"Deleted playlist: {name}")
+    else:
+        raise click.ClickException(f"Playlist '{name}' not found in {dest}")
 
 
 if __name__ == "__main__":

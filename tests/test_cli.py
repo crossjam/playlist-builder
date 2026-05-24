@@ -98,3 +98,64 @@ class TestVerboseFlag:
         result = runner.invoke(main, ["--verbose", "version"])
         assert result.exit_code == 0
         assert "0.1.0" in result.output
+
+
+class TestInfoCommand:
+    def test_shows_playlist_info(self, runner, temp_music_dir, tmp_path):
+        dest = tmp_path / "playlists"
+        runner.invoke(main, ["generate", "--source", str(temp_music_dir), "--dest", str(dest)])
+        result = runner.invoke(main, ["info", "FABRICLIVE_72", "--dest", str(dest)])
+        assert result.exit_code == 0
+        assert "FABRICLIVE_72" in result.output
+        assert "tracks" in result.output.lower()
+
+    def test_info_missing_playlist(self, runner, tmp_path):
+        dest = tmp_path / "playlists"
+        result = runner.invoke(main, ["info", "nonexistent", "--dest", str(dest)])
+        assert result.exit_code != 0
+
+
+class TestValidateCommand:
+    def test_validate_passes(self, runner, temp_music_dir, tmp_path):
+        dest = tmp_path / "playlists"
+        runner.invoke(main, ["generate", "--source", str(temp_music_dir), "--dest", str(dest)])
+        result = runner.invoke(
+            main,
+            [
+                "validate", "FABRICLIVE_72",
+                "--dest", str(dest),
+                "--source", str(temp_music_dir),
+            ],
+        )
+        assert result.exit_code == 0
+        assert "PASSED" in result.output
+
+    def test_validate_fails_on_missing(self, runner, temp_music_dir, tmp_path):
+        dest = tmp_path / "playlists"
+        runner.invoke(main, ["generate", "--source", str(temp_music_dir), "--dest", str(dest)])
+        # Create a fake playlist with nonexistent tracks
+        fake_pl = dest / "fake.m3u"
+        fake_pl.write_text("#EXTM3U\nnonexistent_file.mp3\n")
+        result = runner.invoke(
+            main,
+            ["validate", "fake", "--dest", str(dest), "--source", str(temp_music_dir)],
+        )
+        assert result.exit_code != 0
+        assert "FAILED" in result.output
+
+
+class TestDeleteCommand:
+    def test_deletes_playlist(self, runner, temp_music_dir, tmp_path):
+        dest = tmp_path / "playlists"
+        runner.invoke(main, ["generate", "--source", str(temp_music_dir), "--dest", str(dest)])
+        assert (dest / "FABRICLIVE_72.m3u").exists()
+        result = runner.invoke(main, ["delete", "FABRICLIVE_72", "--dest", str(dest), "--yes"])
+        assert result.exit_code == 0
+        assert not (dest / "FABRICLIVE_72.m3u").exists()
+
+    def test_delete_missing_playlist(self, runner, tmp_path):
+        result = runner.invoke(
+            main,
+            ["delete", "nonexistent", "--dest", str(tmp_path / "playlists"), "--yes"],
+        )
+        assert result.exit_code != 0
