@@ -1,4 +1,4 @@
-"""CLI entry point for fabric-playlists."""
+"""CLI entry point for playlist-builder."""
 
 import sys
 from importlib.metadata import version as _get_version
@@ -8,10 +8,10 @@ import click
 from loguru import logger
 from rich.prompt import Prompt
 
-from fabric_playlists.config import _safe_filename, get_config_path, init_config, load_config
-from fabric_playlists.models import Playlist
-from fabric_playlists.playlist import write_playlist
-from fabric_playlists.scanner import scan_all_directories
+from playlist_builder.config import _safe_filename, get_config_path, init_config, load_config
+from playlist_builder.models import Playlist
+from playlist_builder.playlist import write_playlist
+from playlist_builder.scanner import scan_all_directories
 
 
 def setup_logging(level: str = "INFO") -> None:
@@ -46,7 +46,7 @@ def main(ctx: click.Context, verbose: bool, config_path: str | None) -> None:
     Configuration is loaded from (in precedence order):
       1. CLI flags (--source, --dest)
       2. Environment variables (FABRIC_SOURCE, FABRIC_DEST, FABRIC_LOG_LEVEL)
-      3. TOML config file (~/.config/fabric-playlists/config.toml)
+      3. TOML config file (~/.config/playlist-builder/config.toml)
       4. Hardcoded defaults
     """
     cfg = load_config(Path(config_path) if config_path else None)
@@ -118,7 +118,7 @@ def generate(cfg, source, dest, convert_to_m4a, overwrite):
         logger.warning("No directories with audio files found.")
         return
 
-    from fabric_playlists.config import _safe_filename as safe_fn
+    from playlist_builder.config import _safe_filename as safe_fn
 
     count = 0
     skipped = 0
@@ -129,7 +129,7 @@ def generate(cfg, source, dest, convert_to_m4a, overwrite):
         playlist = Playlist(name=name, tracks=_prompt_continuous_selection(playlist.tracks))
 
         if convert_to_m4a:
-            from fabric_playlists.converter import convert_playlist_tracks
+            from playlist_builder.converter import convert_playlist_tracks
 
             try:
                 logger.info(f"Converting tracks for '{name}' to M4A...")
@@ -176,7 +176,7 @@ def generate(cfg, source, dest, convert_to_m4a, overwrite):
 @click.pass_obj
 def list(cfg, dest):
     """List all generated playlists."""
-    from fabric_playlists.playlist import list_playlists as list_pls
+    from playlist_builder.playlist import list_playlists as list_pls
 
     dest = Path(dest or cfg.dest)
     playlists = list_pls(dest)
@@ -208,7 +208,7 @@ def init(force):
 @main.command()
 def version():
     """Show the installed version."""
-    click.echo(_get_version("fabric-playlists"))
+    click.echo(_get_version("playlist-builder"))
 
 
 @main.command()
@@ -217,7 +217,7 @@ def version():
 @click.pass_obj
 def info(cfg, name, dest):
     """Show details about a specific playlist."""
-    from fabric_playlists.playlist import read_playlist
+    from playlist_builder.playlist import read_playlist
     dest = Path(dest or cfg.dest)
     safe_name = _safe_filename(name)
     filepath = dest / f"{safe_name}.m3u"
@@ -239,7 +239,7 @@ def info(cfg, name, dest):
 @click.pass_obj
 def validate(cfg, name, dest, source):
     """Check that playlist entries point to real files."""
-    from fabric_playlists.playlist import read_playlist
+    from playlist_builder.playlist import read_playlist
     dest = Path(dest or cfg.dest)
     source_dir = Path(source) if source else Path(cfg.source) if cfg.source else None
     safe_name = _safe_filename(name)
@@ -279,7 +279,7 @@ def validate(cfg, name, dest, source):
 @click.pass_obj
 def delete(cfg, name, dest):
     """Remove a playlist file."""
-    from fabric_playlists.playlist import delete_playlist as rm_playlist
+    from playlist_builder.playlist import delete_playlist as rm_playlist
     dest = Path(dest or cfg.dest)
     success = rm_playlist(name, dest)
     if success:

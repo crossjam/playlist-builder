@@ -5,7 +5,7 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-from fabric_playlists.models import Track
+from playlist_builder.models import Track
 
 SUPPORTED_EXTENSIONS = {".mp3", ".flac", ".wav", ".m4a", ".ogg"}
 

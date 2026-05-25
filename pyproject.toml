@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fabric-playlists"
+name = "playlist-builder"
 version = "0.1.0"
 description = "CLI tool to generate and manage M3U playlists for Fabric music directories"
 requires-python = ">=3.11"
@@ -23,7 +23,7 @@ dev = [
 ]
 
 [project.scripts]
-fabric-playlists = "fabric_playlists.cli:main"
+playlist-builder = "playlist_builder.cli:main"
 
 [tool.setuptools.package-dir]
 "" = "src"
@@ -51,4 +51,4 @@ select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "C4"]
 ignore = []
 
 [tool.ruff.lint.isort]
-known-first-party = ["fabric_playlists"]
+known-first-party = ["playlist_builder"]

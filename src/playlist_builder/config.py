@@ -7,7 +7,7 @@ from pathlib import Path
 
 import platformdirs
 
-APP_NAME = "fabric-playlists"
+APP_NAME = "playlist-builder"
 
 
 def get_config_dir() -> Path:
@@ -79,7 +79,7 @@ def init_config(config_path: Path | None = None) -> AppConfig:
     target = config_path or get_config_path()
     if not target.exists():
         default = """\
-# fabric-playlists configuration
+# playlist-builder configuration
 # Environment variables (FABRIC_SOURCE, FABRIC_DEST, FABRIC_LOG_LEVEL)
 # override these values.
 

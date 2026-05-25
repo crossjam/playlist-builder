@@ -1,1 +1,1 @@
-"""Tests for fabric-playlists."""
+"""Tests for playlist-builder."""

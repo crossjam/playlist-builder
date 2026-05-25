@@ -1,6 +1,6 @@
 """Tests for configuration module."""
 
-from fabric_playlists.config import (
+from playlist_builder.config import (
     AppConfig,
     get_config_dir,
     get_config_path,
@@ -12,7 +12,7 @@ from fabric_playlists.config import (
 class TestConfigPaths:
     def test_get_config_dir_returns_platformdirs_path(self):
         path = get_config_dir()
-        assert "fabric-playlists" in str(path)
+        assert "playlist-builder" in str(path)
 
     def test_get_config_path_returns_toml_file(self):
         path = get_config_path()
@@ -91,7 +91,7 @@ class TestInitConfig:
 
 
 def test_safe_filename_helper():
-    from fabric_playlists.config import _safe_filename
+    from playlist_builder.config import _safe_filename
     assert _safe_filename("bad:name?") == "bad_name_"
     assert _safe_filename("  spaces  ") == "spaces"
     assert _safe_filename("") == "unnamed"

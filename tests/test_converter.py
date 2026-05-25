@@ -5,12 +5,12 @@ import subprocess
 
 import pytest
 
-from fabric_playlists.converter import (
+from playlist_builder.converter import (
     convert_playlist_tracks,
     convert_track,
     is_ffmpeg_available,
 )
-from fabric_playlists.models import Playlist, Track
+from playlist_builder.models import Playlist, Track
 
 
 class TestIsFfmpegAvailable:

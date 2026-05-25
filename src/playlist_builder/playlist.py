@@ -2,8 +2,8 @@
 
 from pathlib import Path
 
-from fabric_playlists.config import _safe_filename
-from fabric_playlists.models import Playlist, parse_m3u
+from playlist_builder.config import _safe_filename
+from playlist_builder.models import Playlist, parse_m3u
 
 
 def write_playlist(playlist: Playlist, dest_dir: Path) -> Path:

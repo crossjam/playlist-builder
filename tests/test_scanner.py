@@ -1,6 +1,6 @@
 """Tests for directory scanner."""
 
-from fabric_playlists.scanner import (
+from playlist_builder.scanner import (
     _should_include,
     _should_skip,
     is_audio_file,

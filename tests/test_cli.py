@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 from click.testing import CliRunner
 
-from fabric_playlists.cli import main
-from fabric_playlists.config import AppConfig
+from playlist_builder.cli import main
+from playlist_builder.config import AppConfig
 
 
 @pytest.fixture
@@ -36,9 +36,9 @@ class TestInitCommand:
     ) -> None:
         """Init --force creates config and prints confirmation."""
         target = tmp_path / "config.toml"
-        monkeypatch.setattr("fabric_playlists.cli.get_config_path", lambda: target)
+        monkeypatch.setattr("playlist_builder.cli.get_config_path", lambda: target)
         monkeypatch.setattr(
-            "fabric_playlists.cli.init_config",
+            "playlist_builder.cli.init_config",
             lambda path=None: AppConfig(source="/test/src", dest="/test/dst"),
         )
 

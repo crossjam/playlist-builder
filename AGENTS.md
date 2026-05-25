@@ -1,4 +1,4 @@
-# AGENTS.md — fabric-playlists
+# AGENTS.md — playlist-builder
 
 Instructions and conventions for agents working on this repo.
 
@@ -60,7 +60,7 @@ Lowercase imperative: `feat: ...`, `fix: ...`, `test: ...`, `chore: ...`
 Layering (highest priority first):
 1. CLI flags (`--source`, `--dest`)
 2. Environment variables (`FABRIC_SOURCE`, `FABRIC_DEST`, `FABRIC_LOG_LEVEL`)
-3. TOML config file (`~/.config/fabric-playlists/config.toml`, found via `platformdirs`)
+3. TOML config file (`~/.config/playlist-builder/config.toml`, found via `platformdirs`)
 4. Hardcoded defaults
 
 CLI commands receive config via `@click.pass_obj` → `ctx.obj = cfg` in the group callback. Use `cfg.source`/`cfg.dest` as fallbacks when CLI flags are absent.
@@ -69,7 +69,7 @@ CLI commands receive config via `@click.pass_obj` → `ctx.obj = cfg` in the gro
 
 ## Scanner Module
 
-Located in `src/fabric_playlists/scanner.py`.
+Located in `src/playlist_builder/scanner.py`.
 
 **Include patterns** (`INCLUDE_PATTERNS`): `["FABRICLIVE", "fabric presents"]` — only directories matching at least one pattern are scanned by `scan_all_directories`. Case-insensitive, substring match. Include overrides skip at the top level.
 
@@ -83,7 +83,7 @@ Located in `src/fabric_playlists/scanner.py`.
 
 ## Converter Module
 
-Located in `src/fabric_playlists/converter.py`.
+Located in `src/playlist_builder/converter.py`.
 
 ffmpeg encoding:
 - Codec: `libfdk_aac` (preferred, detected at runtime via `_detect_aac_encoder()`), fallback to built-in `aac`
@@ -96,15 +96,15 @@ ffmpeg encoding:
 
 | Command | Purpose |
 |---|---|
-| `fabric-playlists [--verbose] [--config PATH] generate` | Scan and create M3U files |
-| `fabric-playlists generate --convert-to-m4a` | Transcode non-M4A to M4A |
-| `fabric-playlists generate --overwrite` | Replace existing files (smart: skip if unchanged) |
-| `fabric-playlists list` | List all playlists |
-| `fabric-playlists info NAME` | Show playlist details |
-| `fabric-playlists validate NAME` | Check paths exist |
-| `fabric-playlists delete NAME` | Remove a playlist |
-| `fabric-playlists init` | Bootstrap config.toml |
-| `fabric-playlists version` | Show installed version |
+| `playlist-builder [--verbose] [--config PATH] generate` | Scan and create M3U files |
+| `playlist-builder generate --convert-to-m4a` | Transcode non-M4A to M4A |
+| `playlist-builder generate --overwrite` | Replace existing files (smart: skip if unchanged) |
+| `playlist-builder list` | List all playlists |
+| `playlist-builder info NAME` | Show playlist details |
+| `playlist-builder validate NAME` | Check paths exist |
+| `playlist-builder delete NAME` | Remove a playlist |
+| `playlist-builder init` | Bootstrap config.toml |
+| `playlist-builder version` | Show installed version |
 
 ## Testing
 

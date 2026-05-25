@@ -5,7 +5,7 @@ Generate and manage M3U playlists for Fabric music directories.
 ## Install
 
 ```bash
-cd fabric-playlists
+cd playlist-builder
 pip install .
 ```
 
@@ -17,40 +17,40 @@ pip install ".[dev]"
 ## Quick Start
 
 ```bash
-# 1. Bootstrap your config file (creates ~/.config/fabric-playlists/config.toml)
-fabric-playlists init
+# 1. Bootstrap your config file (creates ~/.config/playlist-builder/config.toml)
+playlist-builder init
 
 # 2. Edit it if needed, or set env vars
 export FABRIC_SOURCE="/path/to/Fabric"
 export FABRIC_DEST="/path/to/playlists"
 
 # 3. Generate playlists
-fabric-playlists generate
+playlist-builder generate
 
 # 4. Enable verbose logging
-fabric-playlists --verbose generate
+playlist-builder --verbose generate
 ```
 
 ## Usage
 
 ```bash
 # Generate playlists
-fabric-playlists generate --source /path/to/Fabric --dest /path/to/playlists
+playlist-builder generate --source /path/to/Fabric --dest /path/to/playlists
 
 # Generate and transcode non-M4A tracks to M4A (requires ffmpeg)
-fabric-playlists generate --convert-to-m4a
+playlist-builder generate --convert-to-m4a
 
 # List playlists
-fabric-playlists list --dest /path/to/playlists
+playlist-builder list --dest /path/to/playlists
 
 # Show playlist details
-fabric-playlists info "FABRICLIVE_72" --dest /path/to/playlists
+playlist-builder info "FABRICLIVE_72" --dest /path/to/playlists
 
 # Validate playlist paths
-fabric-playlists validate "FABRICLIVE_72" --dest /path/to/playlists --source /path/to/Fabric
+playlist-builder validate "FABRICLIVE_72" --dest /path/to/playlists --source /path/to/Fabric
 
 # Delete a playlist
-fabric-playlists delete "FABRICLIVE_72" --dest /path/to/playlists
+playlist-builder delete "FABRICLIVE_72" --dest /path/to/playlists
 ```
 
 ## Configuration
@@ -58,7 +58,7 @@ fabric-playlists delete "FABRICLIVE_72" --dest /path/to/playlists
 Settings are loaded in this order (later overrides earlier):
 
 1. Hardcoded defaults
-2. TOML config file — `~/.config/fabric-playlists/config.toml` (Linux) or platform-appropriate. Create with `fabric-playlists init`.
+2. TOML config file — `~/.config/playlist-builder/config.toml` (Linux) or platform-appropriate. Create with `playlist-builder init`.
 3. Environment variables — `FABRIC_SOURCE`, `FABRIC_DEST`, `FABRIC_LOG_LEVEL`
 4. CLI flags — `--source`, `--dest` on each command
 
@@ -83,7 +83,7 @@ poe qa          # lint + typecheck + test (all three)
 ## Project Layout
 
 ```
-src/fabric_playlists/
+src/playlist_builder/
   cli.py          Click CLI (generate, list, info, validate, delete, init, version)
   scanner.py      Directory walking + m4a dedup
   playlist.py     M3U read/write/list/delete

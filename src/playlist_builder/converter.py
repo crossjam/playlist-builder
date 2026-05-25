@@ -4,7 +4,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from fabric_playlists.models import Playlist, Track
+from playlist_builder.models import Playlist, Track
 
 
 def is_ffmpeg_available() -> bool:
