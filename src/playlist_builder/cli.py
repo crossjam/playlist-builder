@@ -41,7 +41,7 @@ def setup_logging(level: str = "INFO") -> None:
 )
 @click.pass_context
 def main(ctx: click.Context, verbose: bool, config_path: str | None) -> None:
-    """Manage M3U playlists for Fabric music directories.
+    """Build and manage M3U playlists from directories of music files.
 
     Configuration is loaded from (in precedence order):
       1. CLI flags (--source, --dest)
@@ -85,7 +85,7 @@ def _prompt_continuous_selection(tracks):
 @main.command()
 @click.option(
     "--source", "-s", default=None,
-    help="Source directory containing Fabric subdirectories.",
+    help="Source directory containing music subdirectories.",
 )
 @click.option(
     "--dest", "-d", default=None,
@@ -101,7 +101,7 @@ def _prompt_continuous_selection(tracks):
 )
 @click.pass_obj
 def generate(cfg, source, dest, convert_to_m4a, overwrite):
-    """Scan Fabric directories and generate M3U playlists."""
+    """Scan music directories and generate M3U playlists."""
     source = Path(source or cfg.source)
     dest = Path(dest or cfg.dest)
 

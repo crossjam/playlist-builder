@@ -1,1 +1,1 @@
-"""playlist-builder — manage M3U playlists for Fabric music directories."""
+"""playlist-builder — build and manage M3U playlists from directories of music files."""

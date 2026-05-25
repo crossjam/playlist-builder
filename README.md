@@ -1,6 +1,6 @@
-# Fabric Playlists
+# Playlist Builder
 
-Generate and manage M3U playlists for Fabric music directories.
+Generate and manage M3U playlists from directories of music files.
 
 ## Install
 
@@ -21,7 +21,7 @@ pip install ".[dev]"
 playlist-builder init
 
 # 2. Edit it if needed, or set env vars
-export FABRIC_SOURCE="/path/to/Fabric"
+export FABRIC_SOURCE="/path/to/Music"
 export FABRIC_DEST="/path/to/playlists"
 
 # 3. Generate playlists
@@ -35,7 +35,7 @@ playlist-builder --verbose generate
 
 ```bash
 # Generate playlists
-playlist-builder generate --source /path/to/Fabric --dest /path/to/playlists
+playlist-builder generate --source /path/to/Music --dest /path/to/playlists
 
 # Generate and transcode non-M4A tracks to M4A (requires ffmpeg)
 playlist-builder generate --convert-to-m4a
@@ -47,7 +47,7 @@ playlist-builder list --dest /path/to/playlists
 playlist-builder info "FABRICLIVE_72" --dest /path/to/playlists
 
 # Validate playlist paths
-playlist-builder validate "FABRICLIVE_72" --dest /path/to/playlists --source /path/to/Fabric
+playlist-builder validate "FABRICLIVE_72" --dest /path/to/playlists --source /path/to/Music
 
 # Delete a playlist
 playlist-builder delete "FABRICLIVE_72" --dest /path/to/playlists
@@ -64,7 +64,7 @@ Settings are loaded in this order (later overrides earlier):
 
 Example config.toml:
 ```toml
-source = "/mnt/synologynas/Raw Music/Fabric"
+source = "/path/to/Music"
 dest = "/mnt/synologynas/Raw Music/playlists"
 log_level = "INFO"
 ```

@@ -10,6 +10,8 @@ poe qa
 ```
 This runs three gates: `ruff check`, `ty check --python-version 3.11 src/`, `pytest tests/ -v`. All must pass. Fix every error before the commit.
 
+**Running poe:** Try `poe qa` first (direnv activates the venv automatically when the shell enters the project directory). If `poe` is not on PATH, fall back to `.venv/bin/python3 -m poethepoet qa`. Do not hardcode `.venv/bin/poe` — the shebang in that script breaks if the repo is moved or renamed.
+
 **Virtualenv required:**
 ```bash
 python3 -m venv .venv

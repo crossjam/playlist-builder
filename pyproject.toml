@@ -52,3 +52,11 @@ ignore = []
 
 [tool.ruff.lint.isort]
 known-first-party = ["playlist_builder"]
+
+[dependency-groups]
+dev = [
+    "poethepoet>=0.46.0",
+    "pytest>=9.0.3",
+    "ruff>=0.15.14",
+    "ty>=0.0.39",
+]
